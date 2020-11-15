@@ -115,8 +115,9 @@ if __name__ == '__main__':
     # endTimeStamp: 过去某个时间点的时间戳
     # 程序思路：爬从当前到过去某个时间点发布的微博的照片
     # 1584015741: 2020/3/12 20:22:21
-    uid = input("请输入微博博主UID")
-    endTimeStamp = int(input("请输入历史时间的时间戳"))
+    uid = input("请输入微博博主UID: ")
+    print("本程序会爬取历史时间到当前时间之间发布的图片")
+    endTimeStamp = int(input("请输入历史时间的时间戳: "))
     user = User(uid=uid, endTimeStamp=endTimeStamp)
     print("开始爬取")
     user.getAllPic()
