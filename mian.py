@@ -1,6 +1,6 @@
 import os
 import time
-
+import sys
 import requests
 
 
@@ -124,10 +124,33 @@ if __name__ == '__main__':
     # endTimeStamp: 过去某个时间点的时间戳
     # 程序思路：爬从当前到过去某个时间点发布的微博的照片
     # 1584015741: 2020/3/12 20:22:21
-    uid = input("请输入微博博主UID: ")
-    albumID = input("请输入博主专辑ID(不输入则视为所有专辑): ")
-    print("本程序会爬取历史时间到当前时间之间发布的图片")
-    endTimeStamp = input("请输入历史时间的时间戳(为空则视为所有图片): ")
+    # 根据参数长度判断启动时有没有输入参数
+    if len(sys.argv) == 1:
+        # 启动时没输入参数
+        # 正常模式启动
+        uid = input("请输入微博博主UID: ")
+        albumID = input("请输入博主专辑ID(不输入则视为所有专辑): ")
+        print("本程序会爬取历史时间到当前时间之间发布的图片")
+        endTimeStamp = input("请输入历史时间的时间戳(为空则视为所有图片): ")
+    else:
+        # 启动时输入了参数
+        uid = sys.argv[1]
+        # 根据参数长度判断是否指定了专辑ID和截至时间戳
+        if len(sys.argv) >= 3:
+            # 指定了两个或以上个数的参数
+            albumID = sys.argv[2]
+            # 判断是不是指定了三个或以上个参数
+            if len(sys.argv) >= 4:
+                # 如果是，即第三个指定了
+                endTimeStamp = sys.argv[3]
+            else:
+                # 如果第三个没指定
+                endTimeStamp = ""
+        else:
+            # 只指定了一个参数，那么另外俩就是空
+            albumID = ""
+            endTimeStamp = ""
+
     if endTimeStamp == "":
         endTimeStamp = 0
     else:
