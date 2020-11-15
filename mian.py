@@ -63,9 +63,9 @@ class User(object):
             self.objBlogger.uid, self.objBlogger.albumID, page)
         response = self.session.get(url=url)
         self.weiboPicResponse = response
-        self.extractPic()
+        self.extractPic(page)
 
-    def extractPic(self):
+    def extractPic(self, currentPage):
         info = eval(self.weiboPicResponse.text, Json.pars)
         picList = []
         num = 0
@@ -73,20 +73,20 @@ class User(object):
             # print(i)
             # print(type(i))
             num += 1
-            print("正在提取第 {} 个图片".format(num))
+            print("正在提取第 {}/{} 个图片".format(num, currentPage))
             pic = Picture(photo["created_at"], photo["pic_name"], photo["timestamp"],
                           photo["pic_host"].replace("\\", ""))
             picList.append(pic)
-        self.downloadPic(picList)
+        self.downloadPic(picList, currentPage)
         if len(picList) == 0 or picList[-1].picTimeStamp < self.objBlogger.endTimeStamp:
             print("已到达设定的时间点或已经到最后，程序停止")
             exit(0)
 
-    def downloadPic(self, picList):
+    def downloadPic(self, picList, currentPage):
         num = 0
         for pic in picList:
             num += 1
-            print("正在下载第 {} 个图片。".format(num), end="")
+            print("正在下载第 {}/{} 个图片。".format(num, currentPage), end="")
             url = "{}/large/{}".format(pic.picHost, pic.picName)
             print(url, end=" ")
             pic.path = "{}/{}".format(self.objBlogger.path, pic.picEntireName)
