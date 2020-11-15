@@ -78,8 +78,8 @@ class User(object):
                           photo["pic_host"].replace("\\", ""))
             picList.append(pic)
         self.downloadPic(picList)
-        if picList[-1].picTimeStamp < self.objBlogger.endTimeStamp:
-            print("已到达设定的时间点，程序停止")
+        if len(picList) == 0 or picList[-1].picTimeStamp < self.objBlogger.endTimeStamp:
+            print("已到达设定的时间点或已经到最后，程序停止")
             exit(0)
 
     def downloadPic(self, picList):
