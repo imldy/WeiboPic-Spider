@@ -52,6 +52,7 @@ class User(object):
         }
         # 目标博主
         self.objBlogger = Blogger(uid, albumID, endTimeStamp)
+        self.countNum = 0
 
     def getAllPic(self):
         for p in range(1, self.objBlogger.maxPage + 1):
@@ -86,7 +87,8 @@ class User(object):
         num = 0
         for pic in picList:
             num += 1
-            print("正在下载第 {}/{} 个图片。".format(num, currentPage), end="")
+            self.countNum += 1
+            print("正在下载第 {}/{}/{} 个图片。".format(num, currentPage, self.countNum), end="")
             url = "{}/large/{}".format(pic.picHost, pic.picName)
             print(url, end=" ")
             pic.path = "{}/{}".format(self.objBlogger.path, pic.picEntireName)
