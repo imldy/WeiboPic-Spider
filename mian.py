@@ -42,12 +42,12 @@ class Json(object):
 
 
 class User(object):
-    def __init__(self, uid, albumID, endTimeStamp):
+    def __init__(self, COOKIE, uid, albumID, endTimeStamp):
         self.username = ""
         self.password = ""
         self.session = requests.session()
         self.session.headers = {
-            "cookie": "SINAGLOBAL=626278599611.878.1605254150631; wvr=6; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9WhN.S1EjWebU_fzrPf2LSo_5JpX5KMhUgL.Fo-XehBpehnN1hn2dJLoI7L1K0ylKLYEeh5t; ALF=1636955046; SSOLoginState=1605419047; SCF=ApIIV-qu85xls9BcJJUkgACkGJTOIfweVBxh8S3vv2Diu1gMaLAO-dGZKXsyOcFAvUwWZ83T5UeT5RmFcIQd5NA.; SUB=_2A25ytLB3DeRhGeNK61YQ8CbLwzSIHXVRw6a_rDV8PUNbmtAKLXTfkW9NSTDnXgKO1X670ZYVUsf0s7ZznwKUEgtX; _s_tentry=login.sina.com.cn; Apache=5963842306642.673.1605419053838; ULV=1605419053906:3:3:2:5963842306642.673.1605419053838:1605417871665; UOR=tophub.today,s.weibo.com,www.google.com; webim_unReadCount=%7B%22time%22%3A1605423319378%2C%22dm_pub_total%22%3A8%2C%22chat_group_client%22%3A0%2C%22chat_group_notice%22%3A0%2C%22allcountNum%22%3A53%2C%22msgbox%22%3A0%7D",
+            "cookie": COOKIE,
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36"
         }
         # 目标博主
@@ -73,7 +73,7 @@ class User(object):
             # print(i)
             # print(type(i))
             num += 1
-            print("正在提取第 {}/{} 个图片".format(num, currentPage))
+            # print("正在提取第 {}/{} 个图片".format(num, currentPage))
             pic = Picture(photo["created_at"], photo["pic_name"], photo["timestamp"],
                           photo["pic_host"].replace("\\", ""))
             picList.append(pic)
@@ -112,6 +112,15 @@ if __name__ == '__main__':
     dir = "pic"
     if not os.path.exists(dir):
         os.mkdir(dir)
+    # 自定义的COOKIE的处理
+    if os.path.exists("COOKIE"):
+        with open("COOKIE", "r", encoding="utf-8") as f:
+            COOKIE = f.read()
+    else:
+        with open("COOKIE", "w", encoding="utf-8") as f:
+            f.write("")
+        print("请把你的微博cookie放在程序根目录的COOKIE文件内")
+        exit(1)
     # endTimeStamp: 过去某个时间点的时间戳
     # 程序思路：爬从当前到过去某个时间点发布的微博的照片
     # 1584015741: 2020/3/12 20:22:21
@@ -123,6 +132,6 @@ if __name__ == '__main__':
         endTimeStamp = 0
     else:
         endTimeStamp = int(endTimeStamp)
-    user = User(uid=uid, albumID=albumID, endTimeStamp=endTimeStamp)
+    user = User(COOKIE=COOKIE, uid=uid, albumID=albumID, endTimeStamp=endTimeStamp)
     print("开始爬取")
     user.getAllPic()
