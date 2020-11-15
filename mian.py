@@ -118,7 +118,11 @@ if __name__ == '__main__':
     uid = input("请输入微博博主UID: ")
     albumID = input("请输入博主专辑ID(不输入则视为所有专辑): ")
     print("本程序会爬取历史时间到当前时间之间发布的图片")
-    endTimeStamp = int(input("请输入历史时间的时间戳: "))
+    endTimeStamp = input("请输入历史时间的时间戳(为空则视为所有图片): ")
+    if endTimeStamp == "":
+        endTimeStamp = 0
+    else:
+        endTimeStamp = int(endTimeStamp)
     user = User(uid=uid, albumID=albumID, endTimeStamp=endTimeStamp)
     print("开始爬取")
     user.getAllPic()
