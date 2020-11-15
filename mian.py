@@ -89,11 +89,20 @@ class User(object):
             print("正在下载第 {} 个图片。".format(num), end="")
             url = "{}/large/{}".format(pic.picHost, pic.picName)
             print(url, end=" ")
-            response = self.session.get(url)
-            self.savePic(response, pic)
+            pic.path = "{}/{}".format(self.objBlogger.path, pic.picEntireName)
+            if self.fileExists(pic):
+                print("已存在：{}".format(pic.picEntireName))
+            else:
+                response = self.session.get(url)
+                self.savePic(response, pic)
+
+    def fileExists(self, pic):
+        if os.path.exists(pic.path):
+            return True
+        else:
+            return False
 
     def savePic(self, response, pic):
-        pic.path = "{}/{}".format(self.objBlogger.path, pic.picEntireName)
         print(pic.path)
         with open(pic.path, "wb") as f:
             f.write(response.content)
