@@ -5,7 +5,7 @@ import requests
 
 
 class Blogger(object):
-    def __init__(self, uid, endTimeStamp):
+    def __init__(self, uid, albumID, endTimeStamp):
         '''
         :param uid: 博主uid
         :param endTimeStamp: 过去某个时间点的时间戳
@@ -15,7 +15,7 @@ class Blogger(object):
         self.path = "{}/{}".format(dir, self.uid)
         if not os.path.exists(self.path):
             os.mkdir(self.path)
-        self.albumID = 3561598992750714
+        self.albumID = albumID
         self.endTimeStamp = endTimeStamp
         self.maxPage = 100
 
@@ -42,7 +42,7 @@ class Json(object):
 
 
 class User(object):
-    def __init__(self, uid, endTimeStamp):
+    def __init__(self, uid, albumID, endTimeStamp):
         self.username = ""
         self.password = ""
         self.session = requests.session()
@@ -51,7 +51,7 @@ class User(object):
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36"
         }
         # 目标博主
-        self.objBlogger = Blogger(uid, endTimeStamp)
+        self.objBlogger = Blogger(uid, albumID, endTimeStamp)
 
     def getAllPic(self):
         for p in range(1, self.objBlogger.maxPage + 1):
@@ -116,8 +116,9 @@ if __name__ == '__main__':
     # 程序思路：爬从当前到过去某个时间点发布的微博的照片
     # 1584015741: 2020/3/12 20:22:21
     uid = input("请输入微博博主UID: ")
+    albumID = input("请输入博主专辑ID(不输入则视为所有专辑): ")
     print("本程序会爬取历史时间到当前时间之间发布的图片")
     endTimeStamp = int(input("请输入历史时间的时间戳: "))
-    user = User(uid=uid, endTimeStamp=endTimeStamp)
+    user = User(uid=uid, albumID=albumID, endTimeStamp=endTimeStamp)
     print("开始爬取")
     user.getAllPic()
