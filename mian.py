@@ -11,13 +11,22 @@ class Blogger(object):
         :param endTimeStamp: 过去某个时间点的时间戳
         '''
         self.uid = uid
+        self.screenName = self.getScreenName()
         # 给此博主创建目录
-        self.path = "{}/{}".format(dir, self.uid)
+        self.path = "{}/{}".format(dir, self.screenName)
         if not os.path.exists(self.path):
             os.mkdir(self.path)
         self.albumID = albumID
         self.endTimeStamp = endTimeStamp
         self.maxPage = 100
+
+    def getScreenName(self):
+        '''
+        获取博主昵称
+        :return:
+        '''
+        response = requests.get("https://m.weibo.cn/api/container/getIndex?type=uid&value={}".format(self.uid))
+        return eval(response.text, Json.pars)["data"]["userInfo"]["screen_name"]
 
 
 class Picture(object):
