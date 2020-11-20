@@ -30,15 +30,16 @@ class Blogger(object):
 
 
 class Picture(object):
-    def __init__(self, createdTime, picName, picTimeStamp, picHost):
+    def __init__(self, photoID, picName, picTimeStamp, picHost):
         # # 如果含"日"，则代表要修改日期显示的格式
         # if "日" in self.createdTime:
         #     self.createdTime = "{}-{}".format("", self.createdTime.replace("日", "").replace("月", "-"))
+        self.picID = photoID
         self.picName = picName
         self.picHost = picHost
         self.picTimeStamp = picTimeStamp
         self.createdTime = time.strftime("%Y-%m-%d", time.localtime(self.picTimeStamp))
-        self.picEntireName = "{}-{}".format(self.createdTime, self.picName)
+        self.picEntireName = "{}-{}{}".format(self.createdTime, self.picID, os.path.splitext(self.picName)[-1])
         self.path = ""
 
 
@@ -84,7 +85,7 @@ class User(object):
             # print(type(i))
             num += 1
             # print("正在提取第 {}/{} 个图片".format(num, currentPage))
-            pic = Picture(photo["created_at"], photo["pic_name"], photo["timestamp"],
+            pic = Picture(photo["photo_id"], photo["pic_name"], photo["timestamp"],
                           photo["pic_host"].replace("\\", ""))
             picList.append(pic)
         self.downloadPic(picList, currentPage)
