@@ -31,9 +31,6 @@ class Blogger(object):
 
 class Picture(object):
     def __init__(self, photoID, picName, picTimeStamp, picHost):
-        # # 如果含"日"，则代表要修改日期显示的格式
-        # if "日" in self.createdTime:
-        #     self.createdTime = "{}-{}".format("", self.createdTime.replace("日", "").replace("月", "-"))
         self.picID = photoID
         self.picName = picName
         self.picHost = picHost
