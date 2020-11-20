@@ -2,6 +2,7 @@ import os
 import time
 import sys
 import requests
+import optparse
 
 
 class Blogger(object):
@@ -121,7 +122,39 @@ class User(object):
 
 
 if __name__ == '__main__':
-    dir = "pic"
+    usage = "python %prog -u/--uid <博主uid> -a/--albumID <专辑id> -t/--timeStamp <时间戳> -p/--path <保存路径>"
+    parser = optparse.OptionParser(usage)  ## 写入上面定义的帮助信息
+    parser.add_option('-u', '--uid',
+                      dest='uid',
+                      type='string',
+                      help='微博博主的uid')
+    parser.add_option('-a', '--albumID',
+                      dest='albumID',
+                      type='string',
+                      help='要爬取的博主的专辑id',
+                      default="")
+    parser.add_option('-t', '--timeStamp',
+                      dest='timeStamp',
+                      type='int',
+                      help='以前一个时间点的时间戳。若指定，程序会爬取从此时间点到现在发布的图片，否则为全部时间的照片',
+                      default=0)
+    parser.add_option('-p', '--path',
+                      dest='path',
+                      type='string',
+                      help='要保存到的位置，默认./pic',
+                      default="pic")
+    options, args = parser.parse_args()
+    if options.uid == None:
+        print("warning: -u/--uid <博主uid> 为必须项")
+        exit(1)
+    # 微博博主ID
+    uid = options.uid
+    # 专辑ID
+    albumID = options.albumID
+    # endTimeStamp: 过去某个时间点的时间戳
+    endTimeStamp = options.timeStamp
+    # 图片保存到的目录
+    dir = options.path
     if not os.path.exists(dir):
         os.mkdir(dir)
     # 自定义的COOKIE的处理
@@ -133,40 +166,6 @@ if __name__ == '__main__':
             f.write("")
         print("请把你的微博cookie放在程序根目录的COOKIE文件内")
         exit(1)
-    # endTimeStamp: 过去某个时间点的时间戳
-    # 程序思路：爬从当前到过去某个时间点发布的微博的照片
-    # 1584015741: 2020/3/12 20:22:21
-    # 根据参数长度判断启动时有没有输入参数
-    if len(sys.argv) == 1:
-        # 启动时没输入参数
-        # 正常模式启动
-        uid = input("请输入微博博主UID: ")
-        albumID = input("请输入博主专辑ID(不输入则视为所有专辑): ")
-        print("本程序会爬取历史时间到当前时间之间发布的图片")
-        endTimeStamp = input("请输入历史时间的时间戳(为空则视为所有图片): ")
-    else:
-        # 启动时输入了参数
-        uid = sys.argv[1]
-        # 根据参数长度判断是否指定了专辑ID和截至时间戳
-        if len(sys.argv) >= 3:
-            # 指定了两个或以上个数的参数
-            albumID = sys.argv[2]
-            # 判断是不是指定了三个或以上个参数
-            if len(sys.argv) >= 4:
-                # 如果是，即第三个指定了
-                endTimeStamp = sys.argv[3]
-            else:
-                # 如果第三个没指定
-                endTimeStamp = ""
-        else:
-            # 只指定了一个参数，那么另外俩就是空
-            albumID = ""
-            endTimeStamp = ""
-
-    if endTimeStamp == "":
-        endTimeStamp = 0
-    else:
-        endTimeStamp = int(endTimeStamp)
     user = User(COOKIE=COOKIE, uid=uid, albumID=albumID, endTimeStamp=endTimeStamp)
     print("开始爬取")
     user.getAllPic()
