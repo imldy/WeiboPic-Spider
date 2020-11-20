@@ -8,11 +8,20 @@
 
 ## 运行
 
-运行：`python main.py`
+使用方式：
 
-或者：`python main.py 博主UID [专辑ID [历史时间戳]]` 
+```
+Usage: python mian.py -u/--uid <博主uid> -a/--albumID <专辑id> -t/--timeStamp <时间戳> -p/--path <保存路径>
 
-如果要输入历史时间戳，就必须先输入专辑ID，本人技术限制，暂时只能这样了。如果确实不想指定专辑ID，可以随便输入，目前来看随便输入专辑ID爬取的还是该博主的全部图片。
+Options:
+  -h, --help            显示此程序帮助信息并退出
+  -u UID, --uid=UID     微博博主的uid
+  -a ALBUMID, --albumID=ALBUMID
+                        要爬取的博主的专辑id
+  -t TIMESTAMP, --timeStamp=TIMESTAMP
+                        以前一个时间点的时间戳。若指定，程序会爬取从此时间点到现在发布的图片，否则为全部时间的照片
+  -p PATH, --path=PATH  要保存到的位置，默认./pic
+```
 
 ## 图片保存
 
