@@ -106,10 +106,7 @@ class User(object):
                 self.savePic(response, pic)
 
     def fileExists(self, pic):
-        if os.path.exists(pic.path):
-            return True
-        else:
-            return False
+        return os.path.exists(pic.path)
 
     def savePic(self, response, pic):
         print(pic.path)
