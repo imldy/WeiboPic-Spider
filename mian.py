@@ -64,7 +64,7 @@ class User(object):
         for p in range(1, blogger.maxPage + 1):
             print("正在进行第 {} 页".format(p))
             if self.getPicListResponse(p, blogger) == -1:
-                continue
+                break
 
     def getPicListResponse(self, page, blogger):
         url = "https://photo.weibo.com/photos/get_all?uid={}&album_id={}&count=100&page={}&type=3".format(
