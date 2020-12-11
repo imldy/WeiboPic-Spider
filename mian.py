@@ -5,15 +5,16 @@ import optparse
 
 
 class Blogger(object):
-    def __init__(self, uid, albumID, endTimeStamp):
+    def __init__(self, uid, albumID, endTimeStamp, dir):
         '''
         :param uid: 博主uid
         :param endTimeStamp: 过去某个时间点的时间戳
         '''
         self.uid = uid
         self.screenName = self.getScreenName()
-        # 给此博主创建目录
-        self.path = "{}/{}".format(dir, self.screenName)
+        # 给此博主创建所在目录，还不是博主home目录
+        self.dir = dir
+        self.path = "{}/{}".format(self.dir, self.screenName)
         if not os.path.exists(self.path):
             os.mkdir(self.path)
         self.albumID = albumID
@@ -112,6 +113,9 @@ class User(object):
             f.write(response.content)
 
     def getBlogerPic(self, blogger):
+        # 获取之前先给其创建目录
+        if not os.path.exists(blogger.dir):
+            os.mkdir(blogger.dir)
         self.getAllPic(blogger)
 
 
@@ -149,8 +153,6 @@ if __name__ == '__main__':
     endTimeStamp = options.timeStamp
     # 图片保存到的目录
     dir = options.path
-    if not os.path.exists(dir):
-        os.mkdir(dir)
     # 自定义的COOKIE的处理
     if os.path.exists("COOKIE"):
         with open("COOKIE", "r", encoding="utf-8") as f:
@@ -160,7 +162,7 @@ if __name__ == '__main__':
             f.write("")
         print("请把你的微博cookie放在程序根目录的COOKIE文件内")
         exit(1)
-    blogger = Blogger(uid, albumID, endTimeStamp)
+    blogger = Blogger(uid, albumID, endTimeStamp, dir)
     user = User(COOKIE=COOKIE)
     print("开始爬取")
     user.getBlogerPic(blogger)
