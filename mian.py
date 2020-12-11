@@ -142,19 +142,12 @@ if __name__ == '__main__':
                       type='string',
                       help='要保存到的位置，默认./pic',
                       default="pic")
+    parser.add_option('-f', '--file',
+                      dest='conf_file',
+                      type='string',
+                      help='直接指定配置文件',
+                      default="")
     options, args = parser.parse_args()
-    if options.uid == None:
-        print("warning: -u/--uid <博主uid> 为必须项")
-        exit(1)
-    # 微博博主ID
-    uid = options.uid
-    # 专辑ID
-    albumID = options.albumID
-    # endTimeStamp: 过去某个时间点的时间戳
-    endTimeStamp = options.timeStamp
-    # 图片保存到的目录
-    dir = options.path
-    # 自定义的COOKIE的处理
     if os.path.exists("COOKIE"):
         with open("COOKIE", "r", encoding="utf-8") as f:
             COOKIE = f.read()
@@ -163,7 +156,40 @@ if __name__ == '__main__':
             f.write("")
         print("请把你的微博cookie放在程序根目录的COOKIE文件内")
         exit(1)
-    blogger = Blogger(uid, albumID, endTimeStamp, dir)
     user = User(COOKIE=COOKIE)
-    print("开始爬取")
-    user.getBlogerPic(blogger)
+    if options.conf_file != "":
+        with open(options.conf_file, "r", encoding="utf-8") as f:
+            conf = eval(f.read())
+        bloger_list = conf["bloger_list"]
+        for i in bloger_list:
+            # 如果配置文件没有指定专辑ID，则使用参数默认
+            try:
+                i["albumID"]
+            except KeyError:
+                i["albumID"] = options.albumID
+            try:
+                i["timeStamp"]
+            except KeyError:
+                i["timeStamp"] = options.timeStamp
+            try:
+                i["path"]
+            except KeyError:
+                i["path"] = options.path
+            blogger = Blogger(i["uid"], i["albumID"], i["timeStamp"], i["path"])
+            user.getBlogerPic(blogger)
+    else:
+        if options.uid == None:
+            print("warning: -u/--uid <博主uid> 为必须项")
+            exit(1)
+        # 微博博主ID
+        uid = options.uid
+        # 专辑ID
+        albumID = options.albumID
+        # endTimeStamp: 过去某个时间点的时间戳
+        endTimeStamp = options.timeStamp
+        # 图片保存到的目录
+        dir = options.path
+        # 自定义的COOKIE的处理
+        blogger = Blogger(uid, albumID, endTimeStamp, dir)
+        print("开始爬取")
+        user.getBlogerPic(blogger)
