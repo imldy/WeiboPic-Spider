@@ -63,14 +63,15 @@ class User(object):
     def getAllPic(self, blogger):
         for p in range(1, blogger.maxPage + 1):
             print("正在进行第 {} 页".format(p))
-            self.getPicListResponse(p, blogger)
+            if self.getPicListResponse(p, blogger) == -1:
+                continue
 
     def getPicListResponse(self, page, blogger):
         url = "https://photo.weibo.com/photos/get_all?uid={}&album_id={}&count=100&page={}&type=3".format(
             blogger.uid, blogger.albumID, page)
         response = self.session.get(url=url)
         self.weiboPicResponse = response
-        self.extractPic(page, blogger)
+        return self.extractPic(page, blogger)
 
     def extractPic(self, currentPage, blogger):
         info = eval(self.weiboPicResponse.text, Json.pars)
@@ -84,9 +85,10 @@ class User(object):
             pic = Picture(photo["photo_id"], photo["pic_name"], photo["timestamp"],
                           photo["pic_host"].replace("\\", ""))
             picList.append(pic)
-        self.downloadPic(picList, currentPage)
+        self.downloadPic(picList, currentPage, blogger)
         if len(picList) == 0 or picList[-1].picTimeStamp < blogger.endTimeStamp:
-            print("已到达设定的时间点或已经到最后，程序停止")
+            print("已到达设定的时间点或已经到最后")
+            return -1
 
     def downloadPic(self, picList, currentPage, blogger):
         num = 0
