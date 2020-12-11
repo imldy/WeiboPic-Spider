@@ -49,7 +49,7 @@ class Json(object):
 
 
 class User(object):
-    def __init__(self, COOKIE, uid, albumID, endTimeStamp):
+    def __init__(self, COOKIE):
         self.username = ""
         self.password = ""
         self.session = requests.session()
@@ -57,23 +57,21 @@ class User(object):
             "cookie": COOKIE,
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36"
         }
-        # 目标博主
-        self.objBlogger = Blogger(uid, albumID, endTimeStamp)
         self.countNum = 0
 
-    def getAllPic(self):
-        for p in range(1, self.objBlogger.maxPage + 1):
+    def getAllPic(self, blogger):
+        for p in range(1, blogger.maxPage + 1):
             print("正在进行第 {} 页".format(p))
-            self.getPicListResponse(p)
+            self.getPicListResponse(p, blogger)
 
-    def getPicListResponse(self, page):
+    def getPicListResponse(self, page, blogger):
         url = "https://photo.weibo.com/photos/get_all?uid={}&album_id={}&count=100&page={}&type=3".format(
-            self.objBlogger.uid, self.objBlogger.albumID, page)
+            blogger.uid, blogger.albumID, page)
         response = self.session.get(url=url)
         self.weiboPicResponse = response
-        self.extractPic(page)
+        self.extractPic(page, blogger)
 
-    def extractPic(self, currentPage):
+    def extractPic(self, currentPage, blogger):
         info = eval(self.weiboPicResponse.text, Json.pars)
         picList = []
         num = 0
@@ -86,11 +84,11 @@ class User(object):
                           photo["pic_host"].replace("\\", ""))
             picList.append(pic)
         self.downloadPic(picList, currentPage)
-        if len(picList) == 0 or picList[-1].picTimeStamp < self.objBlogger.endTimeStamp:
+        if len(picList) == 0 or picList[-1].picTimeStamp < blogger.endTimeStamp:
             print("已到达设定的时间点或已经到最后，程序停止")
             exit(0)
 
-    def downloadPic(self, picList, currentPage):
+    def downloadPic(self, picList, currentPage, blogger):
         num = 0
         for pic in picList:
             num += 1
@@ -98,7 +96,7 @@ class User(object):
             print("正在下载第 {}/{}/{} 个图片。".format(num, currentPage, self.countNum), end="")
             url = "{}/large/{}".format(pic.picHost, pic.picName)
             print(url, end=" ")
-            pic.path = "{}/{}".format(self.objBlogger.path, pic.picEntireName)
+            pic.path = "{}/{}".format(blogger.path, pic.picEntireName)
             if self.fileExists(pic):
                 print("已存在：{}".format(pic.picEntireName))
             else:
@@ -112,6 +110,9 @@ class User(object):
         print(pic.path)
         with open(pic.path, "wb") as f:
             f.write(response.content)
+
+    def getBlogerPic(self, blogger):
+        self.getAllPic(blogger)
 
 
 if __name__ == '__main__':
@@ -159,6 +160,7 @@ if __name__ == '__main__':
             f.write("")
         print("请把你的微博cookie放在程序根目录的COOKIE文件内")
         exit(1)
-    user = User(COOKIE=COOKIE, uid=uid, albumID=albumID, endTimeStamp=endTimeStamp)
+    blogger = Blogger(uid, albumID, endTimeStamp)
+    user = User(COOKIE=COOKIE)
     print("开始爬取")
-    user.getAllPic()
+    user.getBlogerPic(blogger)
