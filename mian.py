@@ -87,7 +87,6 @@ class User(object):
         self.downloadPic(picList, currentPage)
         if len(picList) == 0 or picList[-1].picTimeStamp < blogger.endTimeStamp:
             print("已到达设定的时间点或已经到最后，程序停止")
-            exit(0)
 
     def downloadPic(self, picList, currentPage, blogger):
         num = 0
