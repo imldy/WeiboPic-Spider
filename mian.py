@@ -74,6 +74,9 @@ class User(object):
         return self.extractPic(page, blogger)
 
     def extractPic(self, currentPage, blogger):
+        if "<html>" in self.weiboPicResponse.text:
+            print("运行失败，可能是cookie已失效")
+            exit(1)
         info = eval(self.weiboPicResponse.text, Json.pars)
         picList = []
         num = 0
