@@ -78,7 +78,7 @@ class User(object):
         if "<html>" in self.weiboPicResponse.text:
             print("运行失败，可能是cookie已失效")
             exit(1)
-        info = eval(self.weiboPicResponse.text, Json.pars)
+        info = self.weiboPicResponse.json()
         picList = []
         num = 0
         for photo in info["data"]["photo_list"]:
